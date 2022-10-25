@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { auth, db } from '../utils/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { toast } from 'react-toastify'
 
@@ -11,6 +11,8 @@ export default function Post() {
     const route = useRouter()
     const [user, loading] = useAuthState(auth)
     const [post, setPost] = useState({ description: '' })
+
+    const updateData = route.query
 
     // Submit Post
     const submitPost = async (e) => {
@@ -48,14 +50,33 @@ export default function Post() {
         return route.push('/')
     }
 
+    // Check our user
+    const checkUser = async () => {
+
+        if(loading) return
+        if(!user) route.push('/auth/login')
+
+        if(updateData.id) {
+            setPost(updateData)
+        }
+
+    }
+
+    useEffect(() => {
+        checkUser()
+    }, [user, loading])
+
+
     return (
         <>
             <Head>
                 <title>Create a Post - Creative Thoughts</title>
+                {updateData.id && <title>Edit Post - Creative Thoughts</title>}
             </Head>
             <div className='my-20 p-12 shadow-lg rounded-lg max-w-md mx-auto'>
                 <form onSubmit={submitPost}>
-                    <h1 className='text-2xl font-bold'>Create a new post</h1>
+                    {updateData.id ? <h1 className='text-2xl font-bold'>Edit post</h1>
+                    : <h1 className='text-2xl font-bold'>Create a new post</h1>}
                     <div className='py-2'>
                         <h3 className='text-lg font-medium py-2'>Description</h3>
                         <textarea className='bg-gray-800 h-48 w-full text-white rounded-lg p-2 text-sm' value={post.description} onChange={e => setPost({...post, description: e.target.value})}></textarea>
