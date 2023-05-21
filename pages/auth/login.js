@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { FcGoogle } from 'react-icons/fc'
-import { GoogleAuthProvider, signInWithPopup} from 'firebase/auth'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { auth } from '../../utils/firebase'
 import { useRouter } from 'next/router'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -17,7 +17,7 @@ export default function Login() {
 
     const GoogleLogin = async () => {
         try {
-            const result = await signInWithPopup(auth, googleProvider)
+            await signInWithPopup(auth, googleProvider)
             route.push('/')
         } catch(e) {
             console.log(e)
@@ -30,7 +30,7 @@ export default function Login() {
         } else {
             console.log('No user')
         }
-    }, [user])
+    }, [user, route])
 
     return (
         <>
